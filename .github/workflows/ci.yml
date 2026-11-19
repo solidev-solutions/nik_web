@@ -5,17 +5,25 @@ on:
     branches:
       - develop
   pull_request:
+  schedule:
+    - cron: '30 2 * * *'
+
+permissions:
+  contents: read
 
 concurrency:
-  group: develop-nik_web-${{ github.event.number }}
+  group: develop-nik_web-${{ github.event_name }}-${{ github.event.number }}
   cancel-in-progress: true
 
 jobs:
   tests:
     runs-on: ubuntu-latest
-    strategy:
-      fail-fast: false
     name: Server
+
+    env:
+      # Frappe cuts each weekly release from version-16-hotfix. The nightly run
+      # tests against it, every other run against what is already released.
+      UPSTREAM_BRANCH: ${{ github.event_name == 'schedule' && 'version-16-hotfix' || 'version-16' }}
 
     services:
       redis-cache:
@@ -36,44 +44,18 @@ jobs:
 
     steps:
       - name: Clone
-        uses: actions/checkout@v6
-
-      - name: Find tests
-        run: |
-          echo "Finding tests"
-          grep -rn "def test" > /dev/null
+        uses: actions/checkout@v7.0.1
 
       - name: Setup Python
-        uses: actions/setup-python@v6
+        uses: actions/setup-python@v7.1.0
         with:
           python-version: '3.14'
 
       - name: Setup Node
-        uses: actions/setup-node@v6
+        uses: actions/setup-node@v7.1.0
         with:
           node-version: 24
           check-latest: true
-
-      - name: Cache pip
-        uses: actions/cache@v4
-        with:
-          path: ~/.cache/pip
-          key: ${{ runner.os }}-pip-${{ hashFiles('**/*requirements.txt', '**/pyproject.toml', '**/setup.py', '**/setup.cfg') }}
-          restore-keys: |
-            ${{ runner.os }}-pip-
-            ${{ runner.os }}-
-
-      - name: Get yarn cache directory path
-        id: yarn-cache-dir-path
-        run: 'echo "dir=$(yarn cache dir)" >> $GITHUB_OUTPUT'
-
-      - uses: actions/cache@v4
-        id: yarn-cache
-        with:
-          path: ${{ steps.yarn-cache-dir-path.outputs.dir }}
-          key: ${{ runner.os }}-yarn-${{ hashFiles('**/yarn.lock') }}
-          restore-keys: |
-            ${{ runner.os }}-yarn-
 
       - name: Install MariaDB Client
         run: |
@@ -83,7 +65,7 @@ jobs:
       - name: Setup
         run: |
           pip install frappe-bench
-          bench init --skip-redis-config-generation --skip-assets --python "$(which python)" ~/frappe-bench
+          bench init --skip-redis-config-generation --skip-assets --frappe-branch "$UPSTREAM_BRANCH" --python "$(which python)" ~/frappe-bench
 
       - name: Install
         working-directory: /home/runner/frappe-bench
@@ -93,13 +75,21 @@ jobs:
           bench new-site --db-root-password root --admin-password admin test_site
           bench --site test_site install-app nik_web
           bench build
-        env:
-          CI: 'Yes'
 
       - name: Run Tests
         working-directory: /home/runner/frappe-bench
         run: |
           bench --site test_site set-config allow_tests true
           bench --site test_site run-tests --app nik_web
-        env:
-          TYPE: server
+
+      - name: Migrate
+        working-directory: /home/runner/frappe-bench
+        run: bench --site test_site migrate
+
+      - name: Uninstall
+        working-directory: /home/runner/frappe-bench
+        run: |
+          bench --site test_site uninstall-app nik_web --yes --no-backup
+          bench --site test_site list-apps
+          # uninstall-app also exits with 0 when it refuses to remove the app
+          if bench --site test_site list-apps | grep -q nik_web; then exit 1; fi

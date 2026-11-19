@@ -1,0 +1,79 @@
+name: Release
+
+on:
+  push:
+    branches:
+      - version-16
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  release:
+    name: Release
+    if: github.event_name == 'push'
+    runs-on: ubuntu-latest
+    environment: release
+    concurrency: release
+    permissions:
+      contents: write
+      issues: write
+      pull-requests: write
+
+    steps:
+      # Only this app may push the version bump and the tag past the branch and tag rules.
+      - uses: actions/create-github-app-token@v3.3.0
+        id: app-token
+        with:
+          client-id: ${{ vars.RELEASE_APP_CLIENT_ID }}
+          private-key: ${{ secrets.RELEASE_APP_PRIVATE_KEY }}
+          permission-contents: write
+
+      - uses: actions/checkout@v7.0.1
+        with:
+          fetch-depth: 0
+          token: ${{ steps.app-token.outputs.token }}
+
+      - uses: actions/setup-node@v7.1.0
+        with:
+          node-version: 24
+
+      # The lockfile in .github/release fixes the version of every package that runs here.
+      - name: Install semantic-release
+        working-directory: .github/release
+        run: npm ci --ignore-scripts
+
+      - name: Create release
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
+        run: .github/release/node_modules/.bin/semantic-release
+
+  dry-run:
+    # Started by hand. Prints what a release from the chosen branch would publish. Release tags
+    # live on version-16 only, so on any other branch the version is right only before the
+    # first release.
+    name: Release Dry Run
+    if: github.event_name == 'workflow_dispatch'
+    runs-on: ubuntu-latest
+    permissions:
+      # semantic-release checks that it may push, in a dry run too.
+      contents: write
+
+    steps:
+      - uses: actions/checkout@v7.0.1
+        with:
+          fetch-depth: 0
+
+      - uses: actions/setup-node@v7.1.0
+        with:
+          node-version: 24
+
+      - name: Install semantic-release
+        working-directory: .github/release
+        run: npm ci --ignore-scripts
+
+      - name: Dry run
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
+        run: .github/release/node_modules/.bin/semantic-release --dry-run --branches "$GITHUB_REF_NAME"

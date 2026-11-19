@@ -4,37 +4,18 @@ Website builder for small craft businesses, built on Frappe
 
 ### Installation
 
-You can install this app using the [bench](https://github.com/frappe/bench) CLI:
+This app needs [Frappe](https://github.com/frappe/frappe) version 16. You can install it using the [bench](https://github.com/frappe/bench) CLI:
 
 ```bash
 cd $PATH_TO_YOUR_BENCH
-bench get-app $URL_OF_THIS_REPO --branch develop
+bench get-app https://github.com/solidev-solutions/nik_web --branch version-16
 bench install-app nik_web
 ```
 
 ### Contributing
 
-This app uses `pre-commit` for code formatting and linting. Please [install pre-commit](https://pre-commit.com/#installation) and enable it for this repository:
-
-```bash
-cd apps/nik_web
-pre-commit install
-```
-
-Pre-commit is configured to use the following tools for checking and formatting your code:
-
-- ruff
-- eslint
-- prettier
-- pyupgrade
-### CI
-
-This app can use GitHub Actions for CI. The following workflows are configured:
-
-- CI: Installs this app and runs unit tests on every push to `develop` branch.
-- Linters: Runs [Frappe Semgrep Rules](https://github.com/frappe/semgrep-rules) and [pip-audit](https://pypi.org/project/pip-audit/) on every pull request.
-
+Pull requests target the `develop` branch. Run `pre-commit install` once, then the checks run on every commit.
 
 ### License
 
-agpl-3.0
+[AGPL-3.0-or-later](license.txt). Copyright (c) 2026, Solidev - Thomas Liska and contributors.
