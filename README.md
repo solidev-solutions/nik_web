@@ -1,6 +1,6 @@
 ### NichtImKopf Web Community
 
-Website builder for small craft businesses, built on Frappe
+Website builder for small businesses, built on Frappe
 
 ### Installation
 

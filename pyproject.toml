@@ -3,7 +3,7 @@ name = "nik_web"
 authors = [
     { name = "Solidev - Thomas Liska", email = "contact@solidev.solutions"}
 ]
-description = "Website builder for small craft businesses, built on Frappe"
+description = "Website builder for small businesses, built on Frappe"
 requires-python = ">=3.14"
 readme = "README.md"
 license = "AGPL-3.0-or-later"

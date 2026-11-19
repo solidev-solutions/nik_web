@@ -1,6 +1,6 @@
 app_name = "nik_web"
 app_title = "NichtImKopf Web Community"
 app_publisher = "Solidev - Thomas Liska"
-app_description = "Website builder for small craft businesses, built on Frappe"
+app_description = "Website builder for small businesses, built on Frappe"
 app_email = "contact@solidev.solutions"
 app_license = "agpl-3.0-or-later"
