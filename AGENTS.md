@@ -32,4 +32,4 @@ NichtImKopf Web Community (`nik_web`) is a website builder for small craft busin
 
 - Never report something as tested, reproduced or checked that did not run.
 - Never bypass permissions to make something work.
-- Never write to another app's tables directly. Change its data through the document: `save`, `submit`, `cancel`.
+- Never write to the tables of Frappe or another app directly. Change their data through the document: `insert`, `save`, `delete`.
