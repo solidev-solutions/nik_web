@@ -1,6 +1,6 @@
 # Agent instructions
 
-NichtImKopf Web Community (`nik_web`) is a website builder for small craft businesses: pages are built from blocks, with what a workshop needs online, such as inquiry forms, bookings and configurators. It is a Frappe app for Frappe 16 and must install and run on a site without ERPNext. Frappe comes first: the app adds its own code only where the native way cannot do the job. The page builder is the stated exception: it uses its own block system instead of Frappe's website builder.
+NichtImKopf Web Community (`nik_web`) is a website builder for small craft businesses: pages are built from blocks, with what a workshop needs online, such as inquiry forms, bookings and configurators. It is a Frappe app for Frappe 16 and must install and run on a site without ERPNext. Frappe comes first: the app adds its own code only where the native way cannot do the job. The page builder is the stated exception: pages, blocks and forms are the app's own DocTypes. It does not build on Frappe's Web Page, Web Template or Web Form, and not on the app Frappe Builder. Frappe's website framework stays the base: the website generator, routing, the website cache and permissions.
 
 ## Before you write code
 
