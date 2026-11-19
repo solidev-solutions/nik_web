@@ -1,0 +1,36 @@
+{
+ "attribution": {
+  "commit": "",
+  "pr": "",
+  "sessionUrl": false
+ },
+ "permissions": {
+  "allow": [
+   "Bash(git switch -c *)",
+   "Bash(pre-commit run *)"
+  ],
+  "ask": [
+   "Bash(git commit *)",
+   "Bash(git * commit *)",
+   "Bash(git * commit)",
+   "Bash(git push *)",
+   "Bash(git * push *)",
+   "Bash(git * push)",
+   "Bash(gh pr create *)",
+   "Bash(gh pr merge *)"
+  ]
+ },
+ "hooks": {
+  "Stop": [
+   {
+    "hooks": [
+     {
+      "type": "command",
+      "command": "\"$CLAUDE_PROJECT_DIR\"/.claude/hooks/pre-commit-changed.sh",
+      "statusMessage": "Running pre-commit on changed files"
+     }
+    ]
+   }
+  ]
+ }
+}

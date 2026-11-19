@@ -53,3 +53,8 @@ jspm_packages/
 
 # Aider AI Chat
 .aider*
+
+# Claude Code personal settings and worktrees
+.claude/settings.local.json
+.claude/worktrees/
+CLAUDE.local.md
