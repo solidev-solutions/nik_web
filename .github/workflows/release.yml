@@ -23,7 +23,7 @@ jobs:
 
     steps:
       # Only this app may push the version bump and the tag past the branch and tag rules.
-      - uses: actions/create-github-app-token@v3.3.0
+      - uses: actions/create-github-app-token@v3.4.0
         id: app-token
         with:
           client-id: ${{ vars.RELEASE_APP_CLIENT_ID }}
